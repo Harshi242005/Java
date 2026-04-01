@@ -1,0 +1,36 @@
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        // Using nextLine() to capture the entire sentence
+        if (!scan.hasNext()) {
+            System.out.println(0);
+            return;
+        }
+        String s = scan.nextLine();
+        
+        // Trim leading and trailing whitespace to avoid empty first tokens
+        s = s.trim();
+        
+        // If the string is empty after trimming, print 0 and exit
+        if (s.length() == 0) {
+            System.out.println(0);
+            return;
+        }
+        
+        // Split the string using a regex that matches any non-alphabetic character
+        // [^A-Za-z]+ means "one or more characters that are NOT letters"
+        String[] tokens = s.split("[^A-Za-z]+");
+        
+        // Print the number of tokens
+        System.out.println(tokens.length);
+        
+        // Print each token on a new line
+        for (String token : tokens) {
+            System.out.println(token);
+        }
+        scan.close();
+    }
+}
