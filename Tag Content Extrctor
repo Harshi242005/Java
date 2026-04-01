@@ -1,0 +1,35 @@
+import java.util.*;
+import java.util.regex.*;
+
+public class Solution {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int testCases = Integer.parseInt(in.nextLine());
+        
+        while (testCases > 0) {
+            String line = in.nextLine();
+            
+            // Regex Breakdown:
+            // <([^>]+)>  : Matches an opening tag and captures the name in Group 1
+            // ([^<]+)    : Matches the content (one or more characters that aren't '<') in Group 2
+            // </\\1>     : Matches a closing tag that uses the same name from Group 1
+            String regex = "<([^>]+)>([^<]+)</\\1>";
+            Pattern p = Pattern.compile(regex);
+            Matcher m = p.matcher(line);
+            
+            boolean found = false;
+            while (m.find()) {
+                // Group 2 contains the actual content between the tags
+                System.out.println(m.group(2));
+                found = true;
+            }
+            
+            if (!found) {
+                System.out.println("None");
+            }
+            
+            testCases--;
+        }
+        in.close();
+    }
+}
