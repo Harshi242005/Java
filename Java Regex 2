@@ -1,0 +1,39 @@
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class DuplicateWords {
+
+    public static void main(String[] args) {
+
+        // 1. Regex to match repeated words (case-insensitive)
+        // \b matches word boundary
+        // (\w+) matches the word and groups it
+        // (\s+\1\b)+ matches one or more repetitions of that same word
+        String regex = "\\b(\\w+)(\\s+\\1\\b)+";
+        
+        // 2. Compile with CASE_INSENSITIVE flag
+        Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+
+        Scanner in = new Scanner(System.in);
+        int numSentences = Integer.parseInt(in.nextLine());
+        
+        while (numSentences-- > 0) {
+            String input = in.nextLine();
+            
+            Matcher m = p.matcher(input);
+            
+            // 3. Use replaceAll with $1 to keep only the first occurrence
+            // We use the Matcher's find() to identify the duplicates
+            while (m.find()) {
+                // Replacing the entire match with just the first group
+                input = input.replaceAll(m.group(), m.group(1));
+
+            }
+            
+            System.out.println(input);
+        }
+        
+        in.close();
+    }
+}
