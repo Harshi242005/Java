@@ -1,0 +1,18 @@
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int lineCounter = 1;
+        
+        // hasNext() checks if there is more input coming from stdin
+        while (sc.hasNext()) {
+            String line = sc.nextLine();
+            System.out.println(lineCounter + " " + line);
+            lineCounter++;
+        }
+        
+        sc.close();
+    }
+}
