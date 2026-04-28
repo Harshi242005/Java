@@ -1,0 +1,29 @@
+class Solution {
+    public int findMinMoves(int[] machines) {
+        int total = 0;
+        for (int m : machines) total += m;
+        
+        int n = machines.length;
+        if (total % n != 0) return -1;
+        
+        int target = total / n;
+        int maxMoves = 0;
+        int currentRunningSum = 0;
+        
+        for (int load : machines) {
+            // Difference between current machine and target
+            int diff = load - target;
+            
+            // Track the prefix sum of differences
+            // This represents the net dresses that must cross this boundary
+            currentRunningSum += diff;
+            
+            // The answer is the maximum of:
+            // 1. The absolute net flow needed across any boundary
+            // 2. The maximum specific outflow needed from a single machine (diff)
+            maxMoves = Math.max(maxMoves, Math.max(Math.abs(currentRunningSum), diff));
+        }
+        
+        return maxMoves;
+    }
+}
