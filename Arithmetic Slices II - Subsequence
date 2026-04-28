@@ -1,0 +1,33 @@
+import java.util.*;
+
+class Solution {
+    public int numberOfArithmeticSlices(int[] nums) {
+        int n = nums.length;
+        int totalCount = 0;
+        // dp[i] maps common difference -> count of sequences ending at i
+        Map<Long, Integer>[] dp = new HashMap[n];
+
+        for (int i = 0; i < n; i++) {
+            dp[i] = new HashMap<>();
+            for (int j = 0; j < i; j++) {
+                // Use long to prevent overflow during subtraction
+                long diff = (long) nums[i] - nums[j];
+                
+                // Get number of sequences ending at j with this difference
+                int countAtJ = dp[j].getOrDefault(diff, 0);
+                
+                // All sequences at j extended to i are now length >= 3
+                totalCount += countAtJ;
+                
+                // Get current count at i for this diff to update it
+                int countAtI = dp[i].getOrDefault(diff, 0);
+                
+                // Update dp[i]: 
+                // 1 (the new [j, i] pair) + countAtJ (extended sequences)
+                dp[i].put(diff, countAtI + countAtJ + 1);
+            }
+        }
+
+        return totalCount;
+    }
+}
