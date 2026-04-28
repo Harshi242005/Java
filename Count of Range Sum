@@ -1,0 +1,39 @@
+class Solution {
+    public int countRangeSum(int[] nums, int lower, int upper) {
+        int n = nums.length;
+        long[] prefixSums = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefixSums[i + 1] = prefixSums[i] + nums[i];
+        }
+        return mergeSort(prefixSums, 0, n, lower, upper);
+    }
+
+    private int mergeSort(long[] sums, int start, int end, int lower, int upper) {
+        if (end <= start) return 0;
+        
+        int mid = (start + end) / 2;
+        int count = mergeSort(sums, start, mid, lower, upper) 
+                  + mergeSort(sums, mid + 1, end, lower, upper);
+        
+        int j = mid + 1, k = mid + 1, t = mid + 1;
+        long[] temp = new long[end - start + 1];
+        int r = 0;
+        
+        for (int i = start; i <= mid; i++) {
+            // Find the range [j, k) such that lower <= sums[index] - sums[i] <= upper
+            while (j <= end && sums[j] - sums[i] < lower) j++;
+            while (k <= end && sums[k] - sums[i] <= upper) k++;
+            
+            // Count valid pairs
+            count += k - j;
+            
+            // Standard merge sort logic to populate temp array
+            while (t <= end && sums[t] < sums[i]) temp[r++] = sums[t++];
+            temp[r++] = sums[i];
+        }
+        
+        // Copy the sorted prefix sums back to the original array
+        System.arraycopy(temp, 0, sums, start, r);
+        return count;
+    }
+}
