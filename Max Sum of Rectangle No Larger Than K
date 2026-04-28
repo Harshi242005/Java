@@ -1,0 +1,40 @@
+import java.util.TreeSet;
+
+class Solution {
+    public int maxSumSubmatrix(int[][] matrix, int k) {
+        int rows = matrix.length, cols = matrix[0].length;
+        int max = Integer.MIN_VALUE;
+
+        // Optimization: Ensure we iterate over the smaller dimension for boundaries
+        int outer = Math.min(rows, cols);
+        int inner = Math.max(rows, cols);
+        boolean colIsOuter = cols <= rows;
+
+        for (int i = 0; i < outer; i++) {
+            int[] sums = new int[inner];
+            for (int j = i; j < outer; j++) {
+                // Calculate prefix sums for the current 1D array
+                for (int r = 0; r < inner; r++) {
+                    sums[r] += colIsOuter ? matrix[r][j] : matrix[j][r];
+                }
+
+                // Find max subarray sum <= k using TreeSet
+                TreeSet<Integer> set = new TreeSet<>();
+                set.add(0);
+                int currentPrefixSum = 0;
+                for (int s : sums) {
+                    currentPrefixSum += s;
+                    // We need currentPrefixSum - prevPrefixSum <= k
+                    // So: prevPrefixSum >= currentPrefixSum - k
+                    Integer target = set.ceiling(currentPrefixSum - k);
+                    if (target != null) {
+                        max = Math.max(max, currentPrefixSum - target);
+                    }
+                    set.add(currentPrefixSum);
+                    if (max == k) return k; // Optimization: Found perfect match
+                }
+            }
+        }
+        return max;
+    }
+}
