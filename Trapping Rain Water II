@@ -1,0 +1,45 @@
+import java.util.*;
+
+class Solution {
+    public int trapRainWater(int[][] heightMap) {
+        int m = heightMap.length;
+        int n = heightMap[0].length;
+        if (m < 3 || n < 3) return 0; // Need at least a 3x3 to trap water
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[2] - b[2]);
+        boolean[][] visited = new boolean[m][n];
+
+        // Add all boundary cells to the Min-Heap
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || i == m - 1 || j == 0 || j == n - 1) {
+                    pq.offer(new int[]{i, j, heightMap[i][j]});
+                    visited[i][j] = true;
+                }
+            }
+        }
+
+        int totalWater = 0;
+        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+        while (!pq.isEmpty()) {
+            int[] curr = pq.poll();
+            int r = curr[0], c = curr[1], h = curr[2];
+
+            for (int[] d : dirs) {
+                int nr = r + d[0];
+                int nc = c + d[1];
+
+                if (nr >= 0 && nr < m && nc >= 0 && nc < n && !visited[nr][nc]) {
+                    visited[nr][nc] = true;
+                    // If neighbor is lower, it traps water
+                    totalWater += Math.max(0, h - heightMap[nr][nc]);
+                    // Push the neighbor with the updated "wall height"
+                    pq.offer(new int[]{nr, nc, Math.max(h, heightMap[nr][nc])});
+                }
+            }
+        }
+
+        return totalWater;
+    }
+}
