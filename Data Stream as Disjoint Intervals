@@ -1,0 +1,38 @@
+import java.util.*;
+
+class SummaryRanges {
+    private TreeMap<Integer, int[]> tree;
+
+    public SummaryRanges() {
+        tree = new TreeMap<>();
+    }
+
+    public void addNum(int value) {
+        if (tree.containsKey(value)) return;
+
+        // Find the closest intervals before and after the new value
+        Integer l = tree.lowerKey(value);
+        Integer h = tree.higherKey(value);
+
+        if (l != null && h != null && tree.get(l)[1] + 1 == value && h == value + 1) {
+            // Case 1: Connects two existing intervals (e.g., [1,1] + 2 + [3,3] -> [1,3])
+            tree.get(l)[1] = tree.get(h)[1];
+            tree.remove(h);
+        } else if (l != null && tree.get(l)[1] + 1 >= value) {
+            // Case 2: Fits into or extends the left interval (e.g., [1,2] + 3 -> [1,3])
+            tree.get(l)[1] = Math.max(tree.get(l)[1], value);
+        } else if (h != null && h == value + 1) {
+            // Case 3: Extends the right interval to the left (e.g., 2 + [3,4] -> [2,4])
+            tree.put(value, new int[]{value, tree.get(h)[1]});
+            tree.remove(h);
+        } else {
+            // Case 4: Is a completely new standalone interval (e.g., [1,1] + 5 -> [5,5])
+            tree.put(value, new int[]{value, value});
+        }
+    }
+
+    public int[][] getIntervals() {
+        // TreeMap values are already sorted by start key
+        return tree.values().toArray(new int[tree.size()][]);
+    }
+}
