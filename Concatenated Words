@@ -1,0 +1,42 @@
+import java.util.*;
+
+class Solution {
+    public List<String> findAllConcatenatedWordsInADict(String[] words) {
+        List<String> result = new ArrayList<>();
+        // 1. Sort by length so we only check against shorter words
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        
+        Set<String> preWords = new HashSet<>();
+        
+        for (String word : words) {
+            if (canForm(word, preWords)) {
+                result.add(word);
+            }
+            // Add current word to dictionary for future, longer words
+            if (word.length() > 0) {
+                preWords.add(word);
+            }
+        }
+        
+        return result;
+    }
+
+    private boolean canForm(String word, Set<String> dict) {
+        if (dict.isEmpty()) return false;
+        int n = word.length();
+        // dp[i] is true if word.substring(0, i) can be formed by dict
+        boolean[] dp = new boolean[n + 1];
+        dp[0] = true;
+        
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && dict.contains(word.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        
+        return dp[n];
+    }
+}
