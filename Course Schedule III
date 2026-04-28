@@ -1,0 +1,31 @@
+import java.util.*;
+
+class Solution {
+    public int scheduleCourse(int[][] courses) {
+        // 1. Sort courses by their deadline (lastDay)
+        Arrays.sort(courses, (a, b) -> a[1] - b[1]);
+
+        // 2. Max-Heap to keep track of the durations of courses taken
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> b - a);
+        
+        int currentTime = 0;
+        for (int[] course : courses) {
+            int duration = course[0];
+            int lastDay = course[1];
+
+            if (currentTime + duration <= lastDay) {
+                // If course fits, take it
+                maxHeap.offer(duration);
+                currentTime += duration;
+            } else if (!maxHeap.isEmpty() && maxHeap.peek() > duration) {
+                // If it doesn't fit, swap with the longest course taken to save time
+                currentTime -= maxHeap.poll();
+                maxHeap.offer(duration);
+                currentTime += duration;
+            }
+        }
+
+        // The size of the heap is the maximum number of courses taken
+        return maxHeap.size();
+    }
+}
