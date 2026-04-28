@@ -1,0 +1,29 @@
+class Solution {
+    public int maxCoins(int[] nums) {
+        int n = nums.length;
+        // 1. Add virtual boundaries with value 1 at both ends
+        int[] arr = new int[n + 2];
+        arr[0] = 1;
+        arr[n + 1] = 1;
+        System.arraycopy(nums, 0, arr, 1, n);
+
+        // 2. dp[i][j] stores max coins from bursting all balloons between i and j (exclusive)
+        int[][] dp = new int[n + 2][n + 2];
+
+        // 3. Iterate through possible range lengths from 1 to n
+        for (int len = 1; len <= n; len++) {
+            // i is the left boundary, j is the right boundary
+            for (int i = 0; i <= n - len; i++) {
+                int j = i + len + 1;
+                // k is the balloon we choose to burst last in this range
+                for (int k = i + 1; k < j; k++) {
+                    dp[i][j] = Math.max(dp[i][j], 
+                        dp[i][k] + dp[k][j] + (arr[i] * arr[k] * arr[j]));
+                }
+            }
+        }
+
+        // The answer is the max coins for the range between the two virtual boundaries
+        return dp[0][n + 1];
+    }
+}
