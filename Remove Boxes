@@ -1,0 +1,33 @@
+class Solution {
+    public int removeBoxes(int[] boxes) {
+        int n = boxes.length;
+        int[][][] memo = new int[n][n][n];
+        return dfs(boxes, 0, n - 1, 0, memo);
+    }
+
+    private int dfs(int[] boxes, int i, int j, int k, int[][][] memo) {
+        if (i > j) return 0;
+        if (memo[i][j][k] > 0) return memo[i][j][k];
+
+        // Optimization: Combine all adjacent boxes of the same color
+        int i0 = i, k0 = k;
+        while (i + 1 <= j && boxes[i + 1] == boxes[i]) {
+            i++;
+            k++;
+        }
+
+        // Option 1: Remove boxes[i] and all k matching boxes to its left
+        int res = (k + 1) * (k + 1) + dfs(boxes, i + 1, j, 0, memo);
+
+        // Option 2: Don't remove boxes[i] yet. Try to merge it with a later 
+        // box of the same color to get a bigger (k+1)^2 bonus.
+        for (int m = i + 1; m <= j; m++) {
+            if (boxes[m] == boxes[i]) {
+                res = Math.max(res, dfs(boxes, i + 1, m - 1, 0, memo) + dfs(boxes, m, j, k + 1, memo));
+            }
+        }
+
+        memo[i0][j][k0] = res;
+        return res;
+    }
+}
