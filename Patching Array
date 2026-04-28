@@ -1,0 +1,21 @@
+class Solution {
+    public int minPatches(int[] nums, int n) {
+        long miss = 1; // Use long to avoid integer overflow
+        int patches = 0;
+        int i = 0;
+
+        while (miss <= n) {
+            if (i < nums.length && nums[i] <= miss) {
+                // We can form all numbers up to miss + nums[i] - 1
+                miss += nums[i];
+                i++;
+            } else {
+                // We must patch the array with 'miss' to maximize the new reach
+                miss += miss;
+                patches++;
+            }
+        }
+
+        return patches;
+    }
+}
