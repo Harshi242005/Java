@@ -1,0 +1,70 @@
+import java.util.*;
+
+class Solution {
+    public double[] medianSlidingWindow(int[] nums, int k) {
+        int n = nums.length;
+        double[] result = new double[n - k + 1];
+        
+        // maxHeap for the lower half, minHeap for the upper half
+        PriorityQueue<Integer> left = new PriorityQueue<>(Collections.reverseOrder());
+        PriorityQueue<Integer> right = new PriorityQueue<>();
+        
+        // Map to track elements that need to be removed (Lazy Removal)
+        Map<Integer, Integer> hash = new HashMap<>();
+
+        // Initialize the first window
+        for (int i = 0; i < k; i++) {
+            left.add(nums[i]);
+        }
+        for (int i = 0; i < k / 2; i++) {
+            right.add(left.poll());
+        }
+
+        for (int i = k; ; i++) {
+            // Get current median
+            if (k % 2 == 1) {
+                result[i - k] = (double) left.peek();
+            } else {
+                result[i - k] = ((double) left.peek() + right.peek()) / 2.0;
+            }
+
+            if (i == n) break;
+
+            int outNum = nums[i - k];
+            int inNum = nums[i];
+            int balance = 0;
+
+            // 1. Determine balance factor (which heap is the outgoing number in?)
+            balance += (outNum <= left.peek() ? -1 : 1);
+            hash.put(outNum, hash.getOrDefault(outNum, 0) + 1);
+
+            // 2. Add the incoming number
+            if (!left.isEmpty() && inNum <= left.peek()) {
+                balance++;
+                left.add(inNum);
+            } else {
+                balance--;
+                right.add(inNum);
+            }
+
+            // 3. Rebalance the heaps
+            if (balance < 0) {
+                left.add(right.poll());
+            } else if (balance > 0) {
+                right.add(left.poll());
+            }
+
+            // 4. Remove "invalid" elements from the tops of the heaps (Lazy removal)
+            while (!left.isEmpty() && hash.getOrDefault(left.peek(), 0) > 0) {
+                hash.put(left.peek(), hash.get(left.peek()) - 1);
+                left.poll();
+            }
+            while (!right.isEmpty() && hash.getOrDefault(right.peek(), 0) > 0) {
+                hash.put(right.peek(), hash.get(right.peek()) - 1);
+                right.poll();
+            }
+        }
+        
+        return result;
+    }
+}
