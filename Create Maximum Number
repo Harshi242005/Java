@@ -1,0 +1,60 @@
+class Solution {
+    public int[] maxNumber(int[] nums1, int[] nums2, int k) {
+        int m = nums1.length;
+        int n = nums2.length;
+        int[] maxResult = new int[k];
+
+        // i is the number of elements taken from nums1
+        // We must ensure k-i elements can be taken from nums2
+        for (int i = Math.max(0, k - n); i <= Math.min(k, m); i++) {
+            int[] sub1 = maxArray(nums1, i);
+            int[] sub2 = maxArray(nums2, k - i);
+            int[] merged = merge(sub1, sub2, k);
+            
+            if (isGreater(merged, 0, maxResult, 0)) {
+                maxResult = merged;
+            }
+        }
+        return maxResult;
+    }
+
+    // Sub-problem 1: Find the max subsequence of length k from one array
+    private int[] maxArray(int[] nums, int k) {
+        int n = nums.length;
+        int[] res = new int[k];
+        int top = -1;
+        int toRemove = n - k;
+        
+        for (int i = 0; i < n; i++) {
+            while (top >= 0 && res[top] < nums[i] && toRemove > 0) {
+                top--;
+                toRemove--;
+            }
+            if (top < k - 1) {
+                res[++top] = nums[i];
+            } else {
+                toRemove--;
+            }
+        }
+        return res;
+    }
+
+    // Sub-problem 2: Merge two arrays to form the maximum possible number
+    private int[] merge(int[] nums1, int[] nums2, int k) {
+        int[] res = new int[k];
+        int i = 0, j = 0;
+        for (int r = 0; r < k; r++) {
+            res[r] = isGreater(nums1, i, nums2, j) ? nums1[i++] : nums2[j++];
+        }
+        return res;
+    }
+
+    // Helper: Compare two arrays starting from specific indices
+    private boolean isGreater(int[] nums1, int i, int[] nums2, int j) {
+        while (i < nums1.length && j < nums2.length && nums1[i] == nums2[j]) {
+            i++;
+            j++;
+        }
+        return j == nums2.length || (i < nums1.length && nums1[i] > nums2[j]);
+    }
+}
